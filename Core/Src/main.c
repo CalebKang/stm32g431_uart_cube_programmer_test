@@ -214,24 +214,21 @@ static void MX_GPIO_Init(void)
 /* USER CODE BEGIN 4 */
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
+  HAL_RCC_DeInit();
+  HAL_DeInit();
+
+  __HAL_REMAPMEMORY_SYSTEMFLASH();
+  __set_MSP(*((uint32_t*) 0x00000000));
+
+  // Application Interrupt and Reset Control :: resetting the peripherals, change the value to 0x05FA0001
   {
-    HAL_RCC_DeInit();
-    HAL_DeInit();
-
-    __HAL_REMAPMEMORY_SYSTEMFLASH();
-    __set_MSP(*((uint32_t*) 0x00000000));
-
-    // Application Interrupt and Reset Control :: resetting the peripherals, change the value to 0x05FA0001
-    {
-      #define SCB_AIRCR_VECTKEY_RESET   (0x05FA0001)
-      SCB->AIRCR = SCB_AIRCR_VECTKEY_RESET;
-    }
-
-    ((void (*)(void)) *((uint32_t*) 0x00000004))();
-
-    while (1);
-
+    #define SCB_AIRCR_VECTKEY_RESET   (0x05FA0001)
+    SCB->AIRCR = SCB_AIRCR_VECTKEY_RESET;
   }
+
+  ((void (*)(void)) *((uint32_t*) 0x00000004))();
+
+  while (1);
 }
 /* USER CODE END 4 */
 
